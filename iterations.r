@@ -64,6 +64,23 @@ stations_metadata_df %>%
   geom_line() + 
   theme_classic()
 
+#Task 6:
 
+#Tried using the labs function and other variants but there seems to be a problem
+# When extracting the "name" variables. Did not find a solution for this.
 
-
+stations_metadata_df %>% 
+  filter(latestData > Sys.Date() - days(7)) %>% 
+  sample_n(1) %$% 
+  vol_qry(
+    id = id,
+    from = to_iso8601(latestData, -4),
+    to = to_iso8601(latestData, 0)
+  ) %>% 
+  GQL(., .url = configs$vegvesen_url) %>%
+  transform_volumes() %>% 
+  ggplot(aes(x=from, y=volume)) + 
+  geom_line() + 
+  labs(color = "Station Name") + #Label for the legend
+  theme_classic() 
+  
