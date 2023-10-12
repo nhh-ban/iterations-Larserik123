@@ -66,10 +66,15 @@ stations_metadata_df %>%
 
 #Task 6:
 
-#Tried using the labs function and other variants but there seems to be a problem
-# When extracting the "name" variables. Did not find a solution for this.
 
+#You need to run both codes to get a new station.
+#First we filter the data and add it to a dataframe:
 stations_metadata_df %>% 
+  filter(latestData > Sys.Date() - days(7)) %>% 
+  sample_n(1) -> selected_station
+
+#Then we use almost the same code as task 5, but we add line 88 to get a legend:
+selected_station %>% 
   filter(latestData > Sys.Date() - days(7)) %>% 
   sample_n(1) %$% 
   vol_qry(
@@ -81,6 +86,5 @@ stations_metadata_df %>%
   transform_volumes() %>% 
   ggplot(aes(x=from, y=volume)) + 
   geom_line() + 
-  labs(color = "Station Name") + #Label for the legend
-  theme_classic() 
-  
+  labs(title = paste("Traffic Volume for:", selected_station$name)) +
+  theme_classic()
