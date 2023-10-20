@@ -64,6 +64,27 @@ stations_metadata_df %>%
   geom_line() + 
   theme_classic()
 
+#Task 6:
 
 
+#You need to run both codes to get a new station.
+#First we filter the data and add it to a dataframe:
+stations_metadata_df %>% 
+  filter(latestData > Sys.Date() - days(7)) %>% 
+  sample_n(1) -> selected_station
 
+#Then we use almost the same code as task 5, but we add line 88 to get a legend:
+selected_station %>% 
+  filter(latestData > Sys.Date() - days(7)) %>% 
+  sample_n(1) %$% 
+  vol_qry(
+    id = id,
+    from = to_iso8601(latestData, -4),
+    to = to_iso8601(latestData, 0)
+  ) %>% 
+  GQL(., .url = configs$vegvesen_url) %>%
+  transform_volumes() %>% 
+  ggplot(aes(x=from, y=volume)) + 
+  geom_line() + 
+  labs(title = paste("Traffic Volume for:", selected_station$name)) +
+  theme_classic()
